@@ -1,10 +1,9 @@
 import * as PIXI from 'pixi.js';
+import Scroller from './background/scroller';
 
-let app = new PIXI.Application();
+const app = new PIXI.Application();
 
 document.body.appendChild(app.view);
-
-app.renderer.backgroundColor = 0x061639;
 
 app.loader
   .add('ship', 'assets/ship.png')
@@ -12,22 +11,16 @@ app.loader
   .add('starfield', 'assets/starfield.png')
   .load((_, resources) => {
     const ship = new PIXI.Sprite(resources.ship.texture);
-    const bg = new PIXI.TilingSprite(resources.bg.texture, 800, 600);
-    const starfield = new PIXI.TilingSprite(resources.starfield.texture, 800, 600);
-    bg.position.set(0, 0);
-    bg.tilePosition.set(0, 0);
-    app.stage.addChild(bg);
-    starfield.position.set(0, 0);
-    starfield.tilePosition.set(0, 0);
-    app.stage.addChild(starfield);
+    const scroller = new Scroller(app.stage);
 
     ship.x = 10;
     ship.y = app.renderer.height / 2;
     ship.scale.set(1.5, 1.5);
     app.stage.addChild(ship);
 
+    let delta = 1;
     app.ticker.add(() => {
-      bg.tilePosition.x -= 0.064;
-      starfield.tilePosition.x -= 0.32;
+      delta += 10;
+      scroller.moveViewPortXBy(delta);
     });
   });
