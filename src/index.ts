@@ -1,31 +1,33 @@
 import * as PIXI from 'pixi.js';
 
-//Create a Pixi Application
 let app = new PIXI.Application();
 
-//Add the canvas that Pixi automatically created for you to the HTML document
 document.body.appendChild(app.view);
 
 app.renderer.backgroundColor = 0x061639;
 
-app.loader.add('bunny', 'assets/Ship/f2.png').load((loader, resources) => {
-  // This creates a texture from a 'bunny.png' image
-  const bunny = new PIXI.Sprite(resources.bunny.texture);
+app.loader
+  .add('ship', 'assets/ship.png')
+  .add('bg', 'assets/bg.gif')
+  .add('starfield', 'assets/starfield.png')
+  .load((_, resources) => {
+    const ship = new PIXI.Sprite(resources.ship.texture);
+    const bg = new PIXI.TilingSprite(resources.bg.texture, 800, 600);
+    const starfield = new PIXI.TilingSprite(resources.starfield.texture, 800, 600);
+    bg.position.set(0, 0);
+    bg.tilePosition.set(0, 0);
+    app.stage.addChild(bg);
+    starfield.position.set(0, 0);
+    starfield.tilePosition.set(0, 0);
+    app.stage.addChild(starfield);
 
-  // Setup the position of the bunny
-  bunny.x = app.renderer.width / 2;
-  bunny.y = app.renderer.height / 2;
+    ship.x = 10;
+    ship.y = app.renderer.height / 2;
+    ship.scale.set(1.5, 1.5);
+    app.stage.addChild(ship);
 
-  // Rotate around the center
-  bunny.anchor.x = 0.5;
-  bunny.anchor.y = 0.5;
-
-  // Add the bunny to the scene we are building
-  app.stage.addChild(bunny);
-
-  // Listen for frame updates
-  app.ticker.add(() => {
-    // each frame we spin the bunny around a bit
-    bunny.rotation += 0.01;
+    app.ticker.add(() => {
+      bg.tilePosition.x -= 0.064;
+      starfield.tilePosition.x -= 0.32;
+    });
   });
-});

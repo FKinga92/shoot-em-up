@@ -26,7 +26,9 @@ module.exports = {
   plugins: [
     new CopyPlugin({
       patterns: [
-        { from: "src/assets", to: "assets" }
+        { from: 'src/index.html' },
+        { from: 'src/favicon.ico' },
+        { from: 'src/assets', to: 'assets' }
       ]
     }),
   ],
