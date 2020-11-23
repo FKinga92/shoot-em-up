@@ -25,7 +25,6 @@ export default class Scroller {
   }
 
   public moveViewPortXBy(value: number) {
-    // this.viewportX = this._viewportX + value;
-    this.viewportX = value;
+    this.viewportX = this._viewportX + value;
   }
 }
