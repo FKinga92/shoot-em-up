@@ -1,0 +1,24 @@
+{
+  "name": "shoot_em_up",
+  "version": "1.0.0",
+  "description": "Side scroller Shoot'em up game",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "webpack",
+    "serve": "webpack serve"
+  },
+  "author": "Kinga Felfalusi-Ilyes",
+  "license": "ISC",
+  "dependencies": {
+    "pixi.js": "^5.3.3"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^6.3.2",
+    "ts-loader": "^8.0.11",
+    "typescript": "^4.1.2",
+    "webpack": "^5.6.0",
+    "webpack-cli": "^4.2.0",
+    "webpack-dev-server": "^3.11.0"
+  }
+}
