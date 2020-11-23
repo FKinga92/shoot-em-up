@@ -1,10 +1,12 @@
 import { Application, Sprite } from 'pixi.js';
 import Scroller from './background/scroller';
+import Ship from './ship';
 
 export default class Main {
 
   private _app: Application;
   private _scroller: Scroller;
+  private _ship: Ship;
 
   constructor() {
     this._app = new Application();
@@ -26,13 +28,14 @@ export default class Main {
   }
 
   private _spritesLoaded() {
-    const ship = new Sprite(this._app.loader.resources.ship.texture);
     this._scroller = new Scroller(this._app.stage);
+    this._ship = new Ship(this._app);
 
-    ship.x = 10;
-    ship.y = this._app.renderer.height / 2;
-    ship.scale.set(1.5, 1.5);
-    this._app.stage.addChild(ship);
+    document.addEventListener('keydown', (e) => {
+      if (e.code.startsWith('Arrow')) {
+        this._ship.move(e.code.replace('Arrow', '').toLowerCase());
+      }
+    });
 
     this._app.ticker.add(this._update.bind(this));
   }
