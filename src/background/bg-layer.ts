@@ -1,12 +1,12 @@
-import * as PIXI from 'pixi.js';
+import { TilingSprite, Texture } from 'pixi.js';
 
-export default class BGLayer extends PIXI.TilingSprite {
+export default class BGLayer extends TilingSprite {
 
   private _viewportX: number;
   private _deltaX: number;
 
   constructor(imgUrl: string, deltaX: number) {
-    const texture = PIXI.Texture.from(imgUrl);
+    const texture = Texture.from(imgUrl);
     super(texture, 800, 600);
 
     this.position.set(0, 0);

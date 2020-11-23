@@ -1,4 +1,4 @@
-import * as PIXI from 'pixi.js';
+import { Container } from 'pixi.js';
 import BGLayer from './bg-layer';
 
 export default class Scroller {
@@ -7,7 +7,7 @@ export default class Scroller {
   private _farback: BGLayer;
   private _starfield: BGLayer;
 
-  constructor(stage: PIXI.Container) {
+  constructor(stage: Container) {
     this._farback = new BGLayer('assets/bg.gif', 0.064);
     this._starfield = new BGLayer('assets/starfield.png', 0.32);
     stage.addChild(this._farback);
