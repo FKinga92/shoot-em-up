@@ -9,9 +9,6 @@ export default class Main {
   private _scroller: Scroller;
   private _ship: Ship;
 
-  private bullets: Array<any>;
-  private bulletSpeed: number;
-
   constructor() {
     this._app = new Application({
       width: CANVAS_WIDTH,
@@ -24,11 +21,7 @@ export default class Main {
 
   private _update() {
     this._scroller.moveViewPortXBy(1); // TODO
-
-    // TODO move this to another class
-    for (let b = this.bullets.length - 1; b >= 0; b--) {
-      this.bullets[b].position.x += this.bulletSpeed;
-    }
+    this._ship.update();
   }
 
   private _loadSprites() {
@@ -44,15 +37,13 @@ export default class Main {
   private _spritesLoaded() {
     this._scroller = new Scroller(this._app.stage);
     this._ship = new Ship(this._app);
-    this.bullets = [];
-    this.bulletSpeed = 5;
 
     document.addEventListener('keydown', (e) => {
       if (e.code.startsWith('Arrow')) {
         this._ship.move(e.code.replace('Arrow', '').toLowerCase());
       }
       if (e.code === 'Space') {
-        this._ship.shoot(this.bullets);
+        this._ship.shoot();
       }
     });
 

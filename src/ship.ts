@@ -1,24 +1,31 @@
 import { AnimatedSprite, Application, Container, Sprite, Texture } from 'pixi.js';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants';
+import MissileSpritesPool from './sprites-pool/missile-sprites-pool';
 
 export default class Ship extends AnimatedSprite {
 
   private static SPEED = 10;
+  private static MISSILE_SPEED = 2;
 
-  private stage: Container;
+  private _stage: Container;
+  private _missiles: Array<Sprite>;
+  private _missileSpritesPool: MissileSpritesPool;
 
   constructor(app: Application) {
     const frames = ['assets/ship/f1.png', 'assets/ship/f2.png', 'assets/ship/f3.png', 'assets/ship/f4.png'];
     const textures = frames.map(url => Texture.from(url));
     super(textures);
 
-    this.x = 10;
-    this.y = app.renderer.height / 2 - this.height / 2;
+    this.position.x = 10;
+    this.position.y = app.renderer.height / 2 - this.height / 2;
     this.scale.set(1.5, 1.5);
-    this.stage = app.stage;
+    this._stage = app.stage;
     this.animationSpeed = 0.167;
     this.play();
-    this.stage.addChild(this);
+    this._stage.addChild(this);
+
+    this._missileSpritesPool = new MissileSpritesPool();
+    this._missiles = [];
   }
 
   public move(direction: string) {
@@ -38,35 +45,56 @@ export default class Ship extends AnimatedSprite {
     }
   }
 
-  public shoot(bullets: Array<any>) {
-    const bullet = new Sprite(Texture.from('assets/missile.png')); // TODO: create spritesheet + probably need a different missile img
-    bullet.position.x = this.x + this.width;
-    bullet.position.y = this.y;
-    this.stage.addChild(bullet);
-    bullets.push(bullet);
+  public shoot() {
+    const missile = this._missileSpritesPool.borrowSprite();
+    missile.position.set(this.position.x + this.width, this.position.y);
+    this._stage.addChild(missile);
+    this._missiles.push(missile);
+  }
+
+  public update() {
+    this._updateMissiles();
+  }
+
+  private _updateMissiles() {
+    this._returnMissiles();
+
+    this._missiles.forEach((missile) => {
+      missile.position.x += Ship.MISSILE_SPEED;
+    });
+  }
+
+  private _returnMissiles() {
+    this._missiles.forEach((missile, idx) => {
+      if (missile.position.x + missile.width > CANVAS_WIDTH) {
+        this._stage.removeChild(missile);
+        this._missileSpritesPool.returnSprite(missile);
+        this._missiles.splice(idx, 1);
+      }
+    });
   }
 
   private _moveUp() {
-    if (this.y > Ship.SPEED) {
-      this.y -= Ship.SPEED;
+    if (this.position.y > Ship.SPEED) {
+      this.position.y -= Ship.SPEED;
     }
   }
 
   private _moveDown() {
-    if (this.y < CANVAS_HEIGHT - this.height - Ship.SPEED) {
-      this.y += Ship.SPEED;
+    if (this.position.y < CANVAS_HEIGHT - this.height - Ship.SPEED) {
+      this.position.y += Ship.SPEED;
     }
   }
 
   private _moveLeft() {
-    if (this.x > Ship.SPEED) {
-      this.x -= Ship.SPEED;
+    if (this.position.x > Ship.SPEED) {
+      this.position.x -= Ship.SPEED;
     }
   }
 
   private _moveRight() {
-    if (this.x < CANVAS_WIDTH - this.width - Ship.SPEED) {
-      this.x += Ship.SPEED;
+    if (this.position.x < CANVAS_WIDTH - this.width - Ship.SPEED) {
+      this.position.x += Ship.SPEED;
     }
   }
 

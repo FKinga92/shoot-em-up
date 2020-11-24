@@ -1,4 +1,5 @@
 import { TilingSprite, Texture } from 'pixi.js';
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../constants';
 
 export default class BGLayer extends TilingSprite {
 
@@ -7,7 +8,7 @@ export default class BGLayer extends TilingSprite {
 
   constructor(imgUrl: string, deltaX: number) {
     const texture = Texture.from(imgUrl);
-    super(texture, 800, 600);
+    super(texture, CANVAS_WIDTH, CANVAS_HEIGHT);
 
     this.position.set(0, 0);
     this.tilePosition.set(0, 0);
