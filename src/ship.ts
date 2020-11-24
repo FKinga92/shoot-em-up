@@ -8,8 +8,9 @@ export default class Ship extends AnimatedSprite {
   private static MISSILE_SPEED = 2;
 
   private _stage: Container;
-  private _missiles: Array<Sprite>;
   private _missileSpritesPool: MissileSpritesPool;
+
+  public readonly missiles: Array<Sprite>;
 
   constructor(app: Application) {
     const frames = ['assets/ship/f1.png', 'assets/ship/f2.png', 'assets/ship/f3.png', 'assets/ship/f4.png'];
@@ -25,7 +26,7 @@ export default class Ship extends AnimatedSprite {
     this._stage = app.stage;
     this._stage.addChild(this);
     this._missileSpritesPool = new MissileSpritesPool();
-    this._missiles = [];
+    this.missiles = [];
   }
 
   public move(direction: string) {
@@ -49,7 +50,11 @@ export default class Ship extends AnimatedSprite {
     const missile = this._missileSpritesPool.borrowSprite();
     missile.position.set(this.position.x + this.width, this.position.y);
     this._stage.addChild(missile);
-    this._missiles.push(missile);
+    this.missiles.push(missile);
+  }
+
+  public hitEnemy(missile: Sprite, idx: number) {
+    this._returnMissile(missile, idx);
   }
 
   public update() {
@@ -59,17 +64,21 @@ export default class Ship extends AnimatedSprite {
   private _updateMissiles() {
     this._returnMissiles();
 
-    this._missiles.forEach((missile) => {
+    this.missiles.forEach((missile) => {
       missile.position.x += Ship.MISSILE_SPEED;
     });
   }
 
+  private _returnMissile(missile: Sprite, idx: number) {
+    this._stage.removeChild(missile);
+    this._missileSpritesPool.returnSprite(missile);
+    this.missiles.splice(idx, 1);
+  }
+
   private _returnMissiles() {
-    this._missiles.forEach((missile, idx) => {
+    this.missiles.forEach((missile, idx) => {
       if (missile.position.x + missile.width > CANVAS_WIDTH) {
-        this._stage.removeChild(missile);
-        this._missileSpritesPool.returnSprite(missile);
-        this._missiles.splice(idx, 1);
+        this._returnMissile(missile, idx);
       }
     });
   }

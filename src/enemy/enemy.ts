@@ -1,4 +1,4 @@
-import { Container, Sprite } from 'pixi.js';
+import { AnimatedSprite, Container, Loader, Sprite, Texture } from 'pixi.js';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../constants';
 import { getRandomIntBetween } from '../utils';
 
@@ -8,15 +8,16 @@ export default class Enemy {
   public static SPEED_Y = 0.2;
 
   private _direction: number;
-  public readonly sprite: Sprite;
 
-  constructor(stage: Container, sprite: Sprite) {
-    this.sprite = sprite;
-    this.sprite.scale.set(1.5, 1.5);
-    this.sprite.position.x = CANVAS_WIDTH - this.sprite.width;
-    this.sprite.position.y = getRandomIntBetween(CANVAS_HEIGHT - this.sprite.height);
-    stage.addChild(this.sprite);
+  constructor(private _stage: Container, private _sprite: Sprite) {
+    this._sprite.scale.set(1.5, 1.5);
+    this._sprite.position.x = CANVAS_WIDTH - this._sprite.width;
+    this._sprite.position.y = getRandomIntBetween(CANVAS_HEIGHT - this._sprite.height);
+    _stage.addChild(this._sprite);
     this._direction = (getRandomIntBetween(10) % 2 === 0) ? -1 : 1;
+  }
+  public get sprite() {
+    return this._sprite;
   }
 
   public updatePosition() {
@@ -29,28 +30,43 @@ export default class Enemy {
     }
   }
 
+  public destroy() {
+    const frames = ['expl1.png', 'expl2.png', 'expl3.png', 'expl4.png', 'expl5.png', 'expl6.png'];
+    const textures = frames.map(url => Texture.from(url));
+    this._stage.removeChild(this._sprite);
+    const sprite = new AnimatedSprite(textures);
+    sprite.position.set(this.sprite.position.x, this.sprite.position.y);
+    sprite.scale.set(0.5, 0.5);
+    sprite.animationSpeed = 0.2;
+    sprite.play();
+    this._stage.addChild(sprite);
+    setTimeout(() => {
+      this._stage.removeChild(sprite);
+    }, 500);
+  }
+
   private _changeDirection() {
     this._direction *= -1;
   }
 
   private _move() {
-    this.sprite.position.y += (this._direction * Enemy.SPEED_Y * getRandomIntBetween(5));
+    this._sprite.position.y += (this._direction * Enemy.SPEED_Y * getRandomIntBetween(5));
     if (this._containedWithinCanvas()) {
       this._changeDirection();
     }
-    this.sprite.position.x -= (Enemy.SPEED_X * getRandomIntBetween(5));
+    this._sprite.position.x -= (Enemy.SPEED_X * getRandomIntBetween(5));
   }
 
   private _containedWithinCanvas() {
     let wallHit = false;
-    const maxYPos = CANVAS_HEIGHT - this.sprite.height;
-    if (this.sprite.position.y <= 0) {
-      this.sprite.position.y = 0;
+    const maxYPos = CANVAS_HEIGHT - this._sprite.height;
+    if (this._sprite.position.y <= 0) {
+      this._sprite.position.y = 0;
       wallHit = true;
     }
 
-    if (this.sprite.position.y >= maxYPos) {
-      this.sprite.position.y = maxYPos;
+    if (this._sprite.position.y >= maxYPos) {
+      this._sprite.position.y = maxYPos;
       wallHit = true;
     }
 

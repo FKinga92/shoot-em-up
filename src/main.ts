@@ -26,7 +26,7 @@ export default class Main {
     this._ship.update();
     this._enemiesManager.update();
     this._checkForCollision();
-    // this._checkForEnemyHit();
+    this._checkForEnemyHit();
   }
 
   private _checkForCollision() {
@@ -44,6 +44,10 @@ export default class Main {
     }
   }
 
+  private _checkForEnemyHit() {
+    this._enemiesManager.checkForHit(this._ship);
+  }
+
   private _loadSprites() {
     // TODO spritesheet
     const shipFrames = ['assets/ship/f1.png', 'assets/ship/f2.png', 'assets/ship/f3.png', 'assets/ship/f4.png'];
@@ -53,6 +57,7 @@ export default class Main {
       .add('assets/starfield.png')
       .add('assets/missile.png')
       .add('assets/enemy.png')
+      .add('assets/explosion.json')
       .load(this._spritesLoaded.bind(this));
   }
 
