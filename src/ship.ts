@@ -1,4 +1,5 @@
 import { Application, Sprite, Texture } from 'pixi.js';
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants';
 
 type Direction = 'up' | 'down' | 'left' | 'right';
 
@@ -32,19 +33,27 @@ export default class Ship extends Sprite {
   }
 
   private _moveUp() {
-    this.y -= 5;
+    if (this.y > 5) {
+      this.y -= 5;
+    }
   }
 
   private _moveDown() {
-    this.y += 5;
+    if (this.y < CANVAS_HEIGHT - this.height) {
+      this.y += 5;
+    }
   }
 
   private _moveLeft() {
-    this.x -= 5;
+    if (this.x > 5) {
+      this.x -= 5;
+    }
   }
 
   private _moveRight() {
-    this.x += 5;
+    if (this.x < CANVAS_WIDTH - this.width) {
+      this.x += 5;
+    }
   }
 
 }

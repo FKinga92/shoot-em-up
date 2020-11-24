@@ -1,5 +1,6 @@
-import { Application, Sprite } from 'pixi.js';
+import { Application } from 'pixi.js';
 import Scroller from './background/scroller';
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants';
 import Ship from './ship';
 
 export default class Main {
@@ -9,7 +10,10 @@ export default class Main {
   private _ship: Ship;
 
   constructor() {
-    this._app = new Application();
+    this._app = new Application({
+      width: CANVAS_WIDTH,
+      height: CANVAS_HEIGHT
+    });
     document.body.appendChild(this._app.view);
 
     this._loadSprites();
