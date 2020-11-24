@@ -1,6 +1,8 @@
 import { Container } from 'pixi.js';
+import Ship from '../ship';
 import EnemySpritesPool from '../sprites-pool/enemy-sprites-pool';
 import Enemy from './enemy';
+import { spritesCollided } from '../utils';
 
 export default class EnemiesManager {
 
@@ -25,6 +27,10 @@ export default class EnemiesManager {
 
   public changeDirection() {
     this._enemies.forEach(enemy => enemy.changeDirection());
+  }
+
+  public checkForCollision(ship: Ship): boolean {
+    return this._enemies.some((enemy) => spritesCollided(ship, enemy.sprite));
   }
 
   private _returnSprites() {

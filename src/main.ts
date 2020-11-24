@@ -1,4 +1,4 @@
-import { Application } from 'pixi.js';
+import { Application, TextStyle, Text } from 'pixi.js';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants';
 import Scroller from './background/scroller';
 import Ship from './ship';
@@ -25,6 +25,23 @@ export default class Main {
     this._scroller.moveViewPortXBy(1); // TODO
     this._ship.update();
     this._enemiesManager.update();
+    this._checkForCollision();
+    // this._checkForEnemyHit();
+  }
+
+  private _checkForCollision() {
+    const shipHit = this._enemiesManager.checkForCollision(this._ship);
+    if (shipHit) { // TODO navigate to main page
+      const style = new TextStyle({
+        fontFamily: 'Futura',
+        fontSize: 64,
+        fill: 'white'
+      });
+      const message = new Text('SHIP HIT', style);
+      message.x = 120;
+      message.y = this._app.stage.height / 2 - 32;
+      this._app.stage.addChild(message);
+    }
   }
 
   private _loadSprites() {
@@ -44,10 +61,8 @@ export default class Main {
     this._ship = new Ship(this._app);
     this._enemiesManager = new EnemiesManager(this._app.stage);
 
-    let numOfEnemies = 0;
-    const intervalId = setInterval(() => {
+    const intervalId = setInterval(() => { // TODO
       this._enemiesManager.addEnemy();
-      numOfEnemies++;
     }, 2000);
 
     const enemySpawnId = setInterval(() => {
