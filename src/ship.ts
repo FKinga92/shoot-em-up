@@ -21,9 +21,9 @@ export default class Ship extends AnimatedSprite {
     this.scale.set(1.5, 1.5);
     this.animationSpeed = 0.167;
     this.play();
+
     this._stage = app.stage;
     this._stage.addChild(this);
-
     this._missileSpritesPool = new MissileSpritesPool();
     this._missiles = [];
   }

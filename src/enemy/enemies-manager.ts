@@ -1,18 +1,16 @@
-import { Application } from 'pixi.js';
+import { Container } from 'pixi.js';
 import Enemy from './enemy';
 
 export default class EnemiesManager {
 
   private _enemies: Array<Enemy>;
-  private _app: Application;
 
-  constructor(app: Application) {
+  constructor(private _stage: Container) {
     this._enemies = [];
-    this._app = app;
   }
 
   public addEnemy() {
-    this._enemies.push(new Enemy(this._app));
+    this._enemies.push(new Enemy(this._stage));
   }
 
   public update() {

@@ -1,4 +1,4 @@
-import { Application, Sprite, Texture } from 'pixi.js';
+import { Container, Sprite, Texture } from 'pixi.js';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../constants';
 import { getRandomIntBetween } from '../utils';
 
@@ -8,13 +8,13 @@ export default class Enemy extends Sprite {
 
   private _direction: number;
 
-  constructor(app: Application) {
+  constructor(stage: Container) {
     const texture = Texture.from('assets/enemy.png');
     super(texture);
     this.scale.set(1.5, 1.5);
     this.position.x = CANVAS_WIDTH - this.width;
     this.position.y = getRandomIntBetween(CANVAS_HEIGHT - this.height);
-    app.stage.addChild(this);
+    stage.addChild(this);
     this._direction = (getRandomIntBetween(10) % 2 === 0) ? -1 : 1;
   }
 
