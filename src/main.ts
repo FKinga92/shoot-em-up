@@ -2,14 +2,14 @@ import { Application } from 'pixi.js';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants';
 import Scroller from './background/scroller';
 import Ship from './ship';
-import Enemy from './enemy';
+import EnemiesManager from './enemy/enemies-manager';
 
 export default class Main {
 
   private _app: Application;
   private _scroller: Scroller;
   private _ship: Ship;
-  private _enemies: Array<Enemy>;
+  private _enemiesManager: EnemiesManager;
 
   constructor() {
     this._app = new Application({
@@ -19,12 +19,13 @@ export default class Main {
     document.body.appendChild(this._app.view);
 
     this._loadSprites();
+    this._enemiesManager = new EnemiesManager(this._app);
   }
 
   private _update() {
     this._scroller.moveViewPortXBy(1); // TODO
     this._ship.update();
-    this._enemies.forEach(enemy => enemy.updatePosition());
+    this._enemiesManager.update();
   }
 
   private _loadSprites() {
@@ -42,18 +43,17 @@ export default class Main {
   private _spritesLoaded() {
     this._scroller = new Scroller(this._app.stage);
     this._ship = new Ship(this._app);
-    this._enemies = [];
 
     let numOfEnemies = 0;
     const intervalId = setInterval(() => {
       if (numOfEnemies < 20) {
-        this._enemies.push(new Enemy(this._app));
+        this._enemiesManager.addEnemy();
         numOfEnemies++;
       }
     }, 2000);
 
     setInterval(() => {
-      this._enemies.forEach(enemy => enemy.changeDirection());
+      this._enemiesManager.changeDirection();
     }, 5000);
 
     document.addEventListener('keydown', (e) => {

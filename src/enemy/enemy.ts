@@ -1,5 +1,5 @@
 import { Application, Sprite, Texture } from 'pixi.js';
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants';
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../constants';
 
 export default class Enemy extends Sprite {
 
@@ -10,8 +10,9 @@ export default class Enemy extends Sprite {
   constructor(app: Application) {
     const texture = Texture.from('assets/enemy.png');
     super(texture);
+    this.scale.set(1.5, 1.5);
     this.position.x = CANVAS_WIDTH - this.width;
-    this.position.y = this._randomInt(CANVAS_HEIGHT);
+    this.position.y = this._randomInt(CANVAS_HEIGHT - this.height);
     app.stage.addChild(this);
     this._direction = (this._randomInt(10) % 2 === 0) ? -1 : 1;
   }
