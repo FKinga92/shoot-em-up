@@ -34,13 +34,25 @@ export default class Enemy {
 
   private _move() {
     this.sprite.position.y += (this._direction * Enemy.SPEED * getRandomIntBetween(5));
-    if (this._hitsWall()) {
+    if (this._containedWithinCanvas()) {
       this._changeDirection();
     }
     this.sprite.position.x -= (0.1 * getRandomIntBetween(5));
   }
 
-  private _hitsWall(): boolean {
-    return this.sprite.position.y <= 0 || this.sprite.position.y >= CANVAS_HEIGHT - this.sprite.height;
+  private _containedWithinCanvas() {
+    let wallHit = false;
+    const maxYPos = CANVAS_HEIGHT - this.sprite.height;
+    if (this.sprite.position.y <= 0) {
+      this.sprite.position.y = 0;
+      wallHit = true;
+    }
+
+    if (this.sprite.position.y >= maxYPos) {
+      this.sprite.position.y = maxYPos;
+      wallHit = true;
+    }
+
+    return wallHit;
   }
 }
