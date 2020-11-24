@@ -19,7 +19,6 @@ export default class Main {
     document.body.appendChild(this._app.view);
 
     this._loadSprites();
-    this._enemiesManager = new EnemiesManager(this._app);
   }
 
   private _update() {
@@ -43,16 +42,15 @@ export default class Main {
   private _spritesLoaded() {
     this._scroller = new Scroller(this._app.stage);
     this._ship = new Ship(this._app);
+    this._enemiesManager = new EnemiesManager(this._app.stage);
 
     let numOfEnemies = 0;
     const intervalId = setInterval(() => {
-      if (numOfEnemies < 20) {
-        this._enemiesManager.addEnemy();
-        numOfEnemies++;
-      }
+      this._enemiesManager.addEnemy();
+      numOfEnemies++;
     }, 2000);
 
-    setInterval(() => {
+    const enemySpawnId = setInterval(() => {
       this._enemiesManager.changeDirection();
     }, 5000);
 
