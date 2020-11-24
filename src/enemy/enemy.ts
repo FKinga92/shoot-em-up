@@ -4,7 +4,8 @@ import { getRandomIntBetween } from '../utils';
 
 export default class Enemy {
 
-  public static SPEED = 0.2;
+  public static SPEED_X = 0.1;
+  public static SPEED_Y = 0.2;
 
   private _direction: number;
   public readonly sprite: Sprite;
@@ -33,11 +34,11 @@ export default class Enemy {
   }
 
   private _move() {
-    this.sprite.position.y += (this._direction * Enemy.SPEED * getRandomIntBetween(5));
+    this.sprite.position.y += (this._direction * Enemy.SPEED_Y * getRandomIntBetween(5));
     if (this._containedWithinCanvas()) {
       this._changeDirection();
     }
-    this.sprite.position.x -= (0.1 * getRandomIntBetween(5));
+    this.sprite.position.x -= (Enemy.SPEED_X * getRandomIntBetween(5));
   }
 
   private _containedWithinCanvas() {
