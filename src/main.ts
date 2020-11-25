@@ -76,7 +76,7 @@ export default class Main {
   private _spritesLoaded() {
     const userKeys = this._createKeys();
     this._scroller = new Scroller(this._app.stage);
-    this._ship = new Ship(this._app, userKeys);
+    this._ship = new Ship(this._app.stage, userKeys);
     this._enemiesManager = new EnemiesManager(this._app.stage);
 
     const intervalId = setInterval(() => { // TODO clearInterval and event unsubscribe
