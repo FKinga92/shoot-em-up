@@ -1,48 +1,44 @@
-import { AnimatedSprite, Application, Container, Loader, Sprite, Spritesheet } from 'pixi.js';
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants';
+import { AnimatedSprite, Application, Container, Loader, Sprite } from 'pixi.js';
+import { CANVAS } from './constants';
+import { Keys } from './movement/keys';
 import MissileSpritesPool from './sprites-pool/missile-sprites-pool';
 
 export default class Ship extends AnimatedSprite {
 
-  private static SPEED = 10;
-  private static MISSILE_SPEED = 2;
+  private static SPEED = 1;
+  private static MISSILE_SPEED = 1;
 
   private _stage: Container;
   private _missileSpritesPool: MissileSpritesPool;
+  private _vx: number;
+  private _vy: number;
+  private _maxX: number;
+  private _maxY: number;
+  private _keys: Keys;
 
   public readonly missiles: Array<Sprite>;
 
-  constructor(app: Application) {
+  constructor(app: Application, keys: Keys) {
     const sheet = Loader.shared.resources['assets/ship.json'].spritesheet;
     super(sheet.animations.f);
 
     this._stage = app.stage;
+    this._keys = keys;
     this._missileSpritesPool = new MissileSpritesPool();
     this.missiles = [];
 
     this.position.x = 10;
-    this.position.y = app.renderer.height / 2 - this.height / 2;
     this.scale.set(1.5, 1.5);
+    this.position.y = CANVAS.height / 2 - this.height / 2;
+    this._vx = 0;
+    this._vy = 0;
+    this._maxX = CANVAS.width - this.width - CANVAS.padding;
+    this._maxY = CANVAS.height - this.height - CANVAS.padding;
     this.animationSpeed = 0.167;
     this.play();
     this._stage.addChild(this);
-  }
 
-  public move(direction: string) {
-    switch (direction) {
-      case 'up':
-        this._moveUp();
-        break;
-      case 'down':
-        this._moveDown();
-        break;
-      case 'left':
-        this._moveLeft();
-        break;
-      case 'right':
-        this._moveRight();
-        break;
-    }
+    this._attachHandlers();
   }
 
   public shoot() {
@@ -57,7 +53,17 @@ export default class Ship extends AnimatedSprite {
   }
 
   public update() {
+    this.position.x += this._vx;
+    this.position.y += this._vy;
+    this._containWithinGameArea();
     this._updateMissiles();
+  }
+
+  private _containWithinGameArea() {
+    if (this.position.x < 0) { this.position.x = 0; }
+    if (this.position.x > this._maxX) { this.position.x = this._maxX; }
+    if (this.position.y < CANVAS.padding) { this.position.y = 0 + CANVAS.padding; }
+    if (this.position.y > this._maxY) { this.position.y = this._maxY; }
   }
 
   private _updateMissiles() {
@@ -76,34 +82,56 @@ export default class Ship extends AnimatedSprite {
 
   private _returnMissiles() {
     this.missiles.forEach((missile, idx) => {
-      if (missile.position.x + missile.width > CANVAS_WIDTH) {
+      if (missile.position.x + missile.width > CANVAS.width) {
         this._returnMissile(missile, idx);
       }
     });
   }
 
+  private _attachHandlers() {
+    const left = this._keys.left;
+    const right = this._keys.right;
+    const up = this._keys.up;
+    const down = this._keys.down;
+
+    left.onPress = this._moveLeft.bind(this);
+    left.onRelease = () => {
+      if (!right.isDown && this._vy === 0) { this._vx = 0; }
+    };
+    right.onPress = this._moveRight.bind(this);
+    right.onRelease = () => {
+      if (!left.isDown && this._vy === 0) { this._vx = 0; }
+    };
+    up.onPress = this._moveUp.bind(this);
+    up.onRelease = () => {
+      if (!down.isDown && this._vx === 0) { this._vy = 0; }
+    };
+    down.onPress = this._moveDown.bind(this);
+    down.onRelease = () => {
+      if (!up.isDown && this._vx === 0) { this._vy = 0; }
+    };
+
+    this._keys.shoot.onRelease = this.shoot.bind(this);
+  }
+
   private _moveUp() {
-    if (this.position.y > Ship.SPEED) {
-      this.position.y -= Ship.SPEED;
-    }
+    this._vy = - Ship.SPEED;
+    this._vx = 0;
   }
 
   private _moveDown() {
-    if (this.position.y < CANVAS_HEIGHT - this.height - Ship.SPEED) {
-      this.position.y += Ship.SPEED;
-    }
+    this._vy = Ship.SPEED;
+    this._vx = 0;
   }
 
   private _moveLeft() {
-    if (this.position.x > Ship.SPEED) {
-      this.position.x -= Ship.SPEED;
-    }
+    this._vx = - Ship.SPEED;
+    this._vy = 0;
   }
 
   private _moveRight() {
-    if (this.position.x < CANVAS_WIDTH - this.width - Ship.SPEED) {
-      this.position.x += Ship.SPEED;
-    }
+    this._vx = Ship.SPEED;
+    this._vy = 0;
   }
 
 }

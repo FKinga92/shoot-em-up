@@ -1,23 +1,29 @@
 import { Application, TextStyle, Text, Loader } from 'pixi.js';
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants';
+import { CANVAS } from './constants';
 import Scroller from './background/scroller';
 import Ship from './ship';
 import EnemiesManager from './enemy/enemies-manager';
+import Key from './movement/key';
+import { Keys } from './movement/keys';
+
+type ControlKey = 'up' | 'down' | 'left' | 'right' | 'shoot';
 
 export default class Main {
 
   private _app: Application;
+  private _keys: { [K in ControlKey]: string };
   private _scroller: Scroller;
   private _ship: Ship;
   private _enemiesManager: EnemiesManager;
 
   constructor() {
     this._app = new Application({
-      width: CANVAS_WIDTH,
-      height: CANVAS_HEIGHT
+      width: CANVAS.width,
+      height: CANVAS.height
     });
     document.body.appendChild(this._app.view);
 
+    this._keys = { up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight', shoot: 'Space' };
     this._loadSprites();
   }
 
@@ -48,6 +54,14 @@ export default class Main {
     this._enemiesManager.checkForHit(this._ship);
   }
 
+  private _createKeys(): Keys {
+    const keys = Object.keys(this._keys) as Array<ControlKey>;
+    return keys.reduce((acc, key) => {
+      acc[key] = new Key(this._keys[key]);
+      return acc;
+    }, {} as Keys);
+  }
+
   private _loadSprites() {
     Loader.shared
       .add('assets/ship.json')
@@ -60,26 +74,18 @@ export default class Main {
   }
 
   private _spritesLoaded() {
+    const userKeys = this._createKeys();
     this._scroller = new Scroller(this._app.stage);
-    this._ship = new Ship(this._app);
+    this._ship = new Ship(this._app, userKeys);
     this._enemiesManager = new EnemiesManager(this._app.stage);
 
-    const intervalId = setInterval(() => { // TODO
+    const intervalId = setInterval(() => { // TODO clearInterval and event unsubscribe
       this._enemiesManager.addEnemy();
     }, 2000);
 
     const enemySpawnId = setInterval(() => {
       this._enemiesManager.changeDirection();
     }, 5000);
-
-    document.addEventListener('keydown', (e) => {
-      if (e.code.startsWith('Arrow')) {
-        this._ship.move(e.code.replace('Arrow', '').toLowerCase());
-      }
-      if (e.code === 'Space') {
-        this._ship.shoot();
-      }
-    });
 
     this._app.ticker.add(this._update.bind(this));
   }

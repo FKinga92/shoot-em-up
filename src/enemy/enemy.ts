@@ -1,19 +1,19 @@
 import { AnimatedSprite, Container, Loader, Sprite } from 'pixi.js';
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../constants';
+import { CANVAS } from '../constants';
 import { getRandomIntBetween } from '../utils';
 
 export default class Enemy {
 
   public static SPEED_X = 0.1;
-  public static SPEED_Y = 0.2;
+  public static SPEED_Y = 0.5;
 
   private _direction: number;
 
   constructor(private _stage: Container, private _sprite: Sprite) {
     this._sprite.scale.set(1.5, 1.5);
-    this._sprite.position.x = CANVAS_WIDTH - this._sprite.width;
-    this._sprite.position.y = getRandomIntBetween(CANVAS_HEIGHT - this._sprite.height);
-    _stage.addChild(this._sprite);
+    this._sprite.position.x = CANVAS.width - this._sprite.width;
+    this._sprite.position.y = getRandomIntBetween(CANVAS.height - CANVAS.padding - this._sprite.height);
+    this._stage.addChild(this._sprite);
     this._direction = (getRandomIntBetween(10) % 2 === 0) ? -1 : 1;
   }
   public get sprite() {
@@ -32,12 +32,12 @@ export default class Enemy {
 
   public destroy() {
     const sheet = Loader.shared.resources['assets/explosion.json'].spritesheet;
-    this._stage.removeChild(this._sprite);
     const sprite = new AnimatedSprite(sheet.animations.expl);
-    sprite.position.set(this.sprite.position.x, this.sprite.position.y);
+    sprite.position.set(this._sprite.position.x, this._sprite.position.y);
     sprite.scale.set(0.5, 0.5);
     sprite.animationSpeed = 0.2;
     sprite.play();
+    this._stage.removeChild(this._sprite);
     this._stage.addChild(sprite);
     setTimeout(() => {
       this._stage.removeChild(sprite);
@@ -58,7 +58,7 @@ export default class Enemy {
 
   private _containedWithinCanvas() {
     let wallHit = false;
-    const maxYPos = CANVAS_HEIGHT - this._sprite.height;
+    const maxYPos = CANVAS.height - CANVAS.padding - this._sprite.height;
     if (this._sprite.position.y <= 0) {
       this._sprite.position.y = 0;
       wallHit = true;
