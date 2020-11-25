@@ -8,6 +8,7 @@ export default class Enemy {
   public static SPEED_Y = 0.5;
 
   private _direction: number;
+  private _maxY: number;
 
   constructor(private _stage: Container, private _sprite: Sprite) {
     this._sprite.scale.set(1.5, 1.5);
@@ -15,6 +16,7 @@ export default class Enemy {
     this._sprite.position.y = getRandomIntBetween(CANVAS.height - CANVAS.padding - this._sprite.height);
     this._stage.addChild(this._sprite);
     this._direction = (getRandomIntBetween(10) % 2 === 0) ? -1 : 1;
+    this._maxY = CANVAS.height - CANVAS.padding - this._sprite.height;
   }
   public get sprite() {
     return this._sprite;
@@ -58,14 +60,13 @@ export default class Enemy {
 
   private _containedWithinCanvas() {
     let wallHit = false;
-    const maxYPos = CANVAS.height - CANVAS.padding - this._sprite.height;
     if (this._sprite.position.y <= 0) {
       this._sprite.position.y = 0;
       wallHit = true;
     }
 
-    if (this._sprite.position.y >= maxYPos) {
-      this._sprite.position.y = maxYPos;
+    if (this._sprite.position.y >= this._maxY) {
+      this._sprite.position.y = this._maxY;
       wallHit = true;
     }
 
