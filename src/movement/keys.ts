@@ -1,4 +1,4 @@
-import Key from './key';
+import { Key } from './key';
 
 export interface Keys {
   up: Key;
@@ -7,3 +7,5 @@ export interface Keys {
   right: Key;
   shoot: Key;
 }
+
+export type ControlKey = 'up' | 'down' | 'left' | 'right' | 'shoot';

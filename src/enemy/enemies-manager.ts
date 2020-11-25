@@ -1,4 +1,4 @@
-import { Container } from 'pixi.js';
+import { Container, Sprite } from 'pixi.js';
 import Ship from '../ship';
 import EnemySpritesPool from '../sprites-pool/enemy-sprites-pool';
 import Enemy from './enemy';
@@ -33,20 +33,18 @@ export default class EnemiesManager {
     return this._enemies.some((enemy) => spritesCollided(ship, enemy.sprite));
   }
 
-  public checkForHit(ship: Ship) {
+  public checkForHit(ship: Ship): Array<Sprite> {
+    const destroyedEnemies: Array<Sprite> = [];
     ship.missiles.forEach((missile, missilIdx) => {
       this._enemies.forEach((enemy, idx) => {
         if (spritesCollided(missile, enemy.sprite)) {
           ship.hitEnemy(missile, missilIdx);
-          this._destoryEnemy(enemy, idx);
+          destroyedEnemies.push(enemy.sprite);
+          this._returnSprite(enemy, idx);
         }
       });
     });
-  }
-
-  private _destoryEnemy(enemy: Enemy, idx: number) {
-    enemy.destroy();
-    this._returnSprite(enemy, idx);
+    return destroyedEnemies;
   }
 
   private _returnSprite(enemy: Enemy, idx: number) {

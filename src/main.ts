@@ -1,12 +1,9 @@
-import { Application, TextStyle, Text, Loader } from 'pixi.js';
+import { Application, TextStyle, Text, Loader, Sprite, AnimatedSprite } from 'pixi.js';
 import { CANVAS } from './constants';
 import Scroller from './background/scroller';
 import Ship from './ship';
 import EnemiesManager from './enemy/enemies-manager';
-import Key from './movement/key';
-import { Keys } from './movement/keys';
-
-type ControlKey = 'up' | 'down' | 'left' | 'right' | 'shoot';
+import { Key, ControlKey, Keys } from './movement';
 
 export default class Main {
 
@@ -15,11 +12,15 @@ export default class Main {
   private _scroller: Scroller;
   private _ship: Ship;
   private _enemiesManager: EnemiesManager;
+  private _enemySpawnId: NodeJS.Timeout;
+  private _enemyDirChangeId: NodeJS.Timeout;
 
   constructor() {
     this._app = new Application({
       width: CANVAS.width,
-      height: CANVAS.height
+      height: CANVAS.height,
+      sharedLoader: true,
+      sharedTicker: true
     });
     document.body.appendChild(this._app.view);
 
@@ -28,9 +29,12 @@ export default class Main {
   }
 
   private _update() {
+    if (!this._ship) {
+      return;
+    }
     this._scroller.moveViewPortXBy(1); // TODO
-    this._ship.update();
     this._enemiesManager.update();
+    this._ship.update();
     this._checkForCollision();
     this._checkForEnemyHit();
   }
@@ -38,6 +42,7 @@ export default class Main {
   private _checkForCollision() {
     const shipHit = this._enemiesManager.checkForCollision(this._ship);
     if (shipHit) { // TODO navigate to main page
+      this._destroySprite(this._ship, true);
       const style = new TextStyle({
         fontFamily: 'Futura',
         fontSize: 64,
@@ -50,8 +55,40 @@ export default class Main {
     }
   }
 
+  private _destroySprite(destroyedSprite: Sprite, gameOver = false) {
+    const sprite = this._createExplosionOf(destroyedSprite);
+    this._app.stage.addChild(sprite);
+    if (gameOver) {
+      this._stopGame();
+    }
+    destroyedSprite.destroy();
+    setTimeout(() => {
+      this._app.stage.removeChild(sprite);
+    }, 500);
+  }
+
+  private _createExplosionOf(destroyedSprite: Sprite): Sprite {
+    const sheet = Loader.shared.resources['assets/explosion.json'].spritesheet;
+    const sprite = new AnimatedSprite(sheet.animations.expl);
+    sprite.position.set(destroyedSprite.position.x, destroyedSprite.position.y);
+    sprite.scale.set(0.5, 0.5);
+    sprite.animationSpeed = 0.2;
+    sprite.play();
+    return sprite;
+  }
+
+  private _stopGame() {
+    this._ship.onDestroy();
+    this._ship = null;
+    clearInterval(this._enemySpawnId);
+    clearInterval(this._enemyDirChangeId);
+  }
+
   private _checkForEnemyHit() {
-    this._enemiesManager.checkForHit(this._ship);
+    if (this._ship) {
+      const destroyedEnemies = this._enemiesManager.checkForHit(this._ship);
+      destroyedEnemies.forEach(enemy => this._destroySprite(enemy));
+    }
   }
 
   private _createKeys(): Keys {
@@ -63,7 +100,7 @@ export default class Main {
   }
 
   private _loadSprites() {
-    Loader.shared
+    this._app.loader
       .add('assets/ship.json')
       .add('assets/bg.gif')
       .add('assets/starfield.png')
@@ -79,11 +116,11 @@ export default class Main {
     this._ship = new Ship(this._app.stage, userKeys);
     this._enemiesManager = new EnemiesManager(this._app.stage);
 
-    const intervalId = setInterval(() => { // TODO clearInterval and event unsubscribe
+    this._enemySpawnId = setInterval(() => {
       this._enemiesManager.addEnemy();
     }, 2000);
 
-    const enemySpawnId = setInterval(() => {
+    this._enemyDirChangeId = setInterval(() => {
       this._enemiesManager.changeDirection();
     }, 5000);
 

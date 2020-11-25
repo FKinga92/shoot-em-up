@@ -1,4 +1,4 @@
-import { AnimatedSprite, Container, Loader, Sprite } from 'pixi.js';
+import { Container, Sprite } from 'pixi.js';
 import { CANVAS } from '../constants';
 import { getRandomIntBetween } from '../utils';
 
@@ -30,20 +30,6 @@ export default class Enemy {
     if (getRandomIntBetween(10) % 2 === 0) {
       this._changeDirection();
     }
-  }
-
-  public destroy() {
-    const sheet = Loader.shared.resources['assets/explosion.json'].spritesheet;
-    const sprite = new AnimatedSprite(sheet.animations.expl);
-    sprite.position.set(this._sprite.position.x, this._sprite.position.y);
-    sprite.scale.set(0.5, 0.5);
-    sprite.animationSpeed = 0.2;
-    sprite.play();
-    this._stage.removeChild(this._sprite);
-    this._stage.addChild(sprite);
-    setTimeout(() => {
-      this._stage.removeChild(sprite);
-    }, 500);
   }
 
   private _changeDirection() {

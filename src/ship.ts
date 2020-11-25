@@ -1,6 +1,6 @@
 import { AnimatedSprite, Container, Loader, Sprite } from 'pixi.js';
 import { CANVAS } from './constants';
-import { Keys } from './movement/keys';
+import { ControlKey, Keys } from './movement';
 import MissileSpritesPool from './sprites-pool/missile-sprites-pool';
 
 export default class Ship extends AnimatedSprite {
@@ -57,6 +57,13 @@ export default class Ship extends AnimatedSprite {
     this.position.y += this._vy;
     this._containWithinGameArea();
     this._updateMissiles();
+  }
+
+  public onDestroy() {
+    const keys = Object.keys(this._keys) as Array<ControlKey>;
+    keys.forEach((key) => {
+      this._keys[key].onDestroy();
+    });
   }
 
   private _containWithinGameArea() {

@@ -1,4 +1,4 @@
-export default class Key {
+export class Key {
 
   public isDown: boolean;
   public isUp: boolean;
