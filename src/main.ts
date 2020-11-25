@@ -56,14 +56,16 @@ export default class Main {
   }
 
   private _destroySprite(destroyedSprite: Sprite, gameOver = false) {
-    const sprite = this._createExplosionOf(destroyedSprite);
-    this._app.stage.addChild(sprite);
+    const explosion = this._createExplosionOf(destroyedSprite);
+    this._app.stage.addChild(explosion);
     if (gameOver) {
       this._stopGame();
+      destroyedSprite.destroy();
+    } else {
+      this._app.stage.removeChild(destroyedSprite);
     }
-    destroyedSprite.destroy();
     setTimeout(() => {
-      this._app.stage.removeChild(sprite);
+      this._app.stage.removeChild(explosion);
     }, 500);
   }
 

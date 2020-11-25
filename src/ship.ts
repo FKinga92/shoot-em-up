@@ -43,9 +43,14 @@ export default class Ship extends AnimatedSprite {
 
   public shoot() {
     const missile = this._missileSpritesPool.borrowSprite();
-    missile.position.set(this.position.x + this.width, this.position.y);
-    this._stage.addChild(missile);
-    this.missiles.push(missile);
+    if (missile) {
+      missile.position.set(this.position.x + this.width, this.position.y);
+      this._stage.addChild(missile);
+      this.missiles.push(missile);
+    } else {
+      // could dinamically increase pool size here
+      console.log('Out of missiles.');
+    }
   }
 
   public hitEnemy(missile: Sprite, idx: number) {
