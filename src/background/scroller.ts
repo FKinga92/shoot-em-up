@@ -24,7 +24,7 @@ export default class Scroller {
     this._starfield.setViewportX(viewportX);
   }
 
-  public moveViewPortXBy(value: number) {
+  public moveViewPortXBy(value = 1) {
     this.viewportX = this._viewportX + value;
   }
 }

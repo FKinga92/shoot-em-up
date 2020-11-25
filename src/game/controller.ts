@@ -1,6 +1,6 @@
 import { AnimatedSprite, Container, Loader, Sprite, TextStyle, Text } from 'pixi.js';
 import { CANVAS } from '../constants';
-import Scroller from './background/scroller';
+import Scroller from '../background/scroller';
 import EnemiesManager from './enemy/enemies-manager';
 import { ControlKey, Key, Keys } from './movement';
 import Ship from './ship';
@@ -13,6 +13,7 @@ export default class Controller extends Container {
   private _enemiesManager: EnemiesManager;
   private _enemySpawnId: NodeJS.Timeout;
   private _enemyDirChangeId: NodeJS.Timeout;
+  private _isStopped = false;
 
   constructor(private _stage: Container) {
     super();
@@ -33,11 +34,15 @@ export default class Controller extends Container {
     }, 5000);
   }
 
+  public get isStopped(): boolean {
+    return this._isStopped;
+  }
+
   public update() {
     if (!this._ship) {
       return;
     }
-    this._scroller.moveViewPortXBy(1); // TODO
+    this._scroller.moveViewPortXBy();
     this._enemiesManager.update();
     this._ship.update();
     this._checkForCollision();
@@ -46,16 +51,16 @@ export default class Controller extends Container {
 
   private _checkForCollision() {
     const shipHit = this._enemiesManager.checkForCollision(this._ship);
-    if (shipHit) { // TODO navigate to main page
+    if (shipHit) {
       this._destroySprite(this._ship, true);
       const style = new TextStyle({
         fontFamily: 'Futura',
         fontSize: 64,
         fill: 'white'
       });
-      const message = new Text('SHIP HIT', style);
-      message.x = 120;
-      message.y = CANVAS.height / 2 - 32;
+      const message = new Text('GAME OVER', style);
+      message.x = CANVAS.width / 2 - message.width / 2;
+      message.y = CANVAS.height / 2 - message.height;
       this.addChild(message);
     }
   }
@@ -71,6 +76,7 @@ export default class Controller extends Container {
     }
     setTimeout(() => {
       this.removeChild(explosion);
+      if (gameOver) { this._isStopped = true; }
     }, 500);
   }
 
