@@ -1,4 +1,4 @@
-import { Application, TextStyle, Text } from 'pixi.js';
+import { Application, TextStyle, Text, Loader } from 'pixi.js';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants';
 import Scroller from './background/scroller';
 import Ship from './ship';
@@ -49,10 +49,8 @@ export default class Main {
   }
 
   private _loadSprites() {
-    // TODO spritesheet
-    const shipFrames = ['assets/ship/f1.png', 'assets/ship/f2.png', 'assets/ship/f3.png', 'assets/ship/f4.png'];
-    this._app.loader
-      .add(shipFrames)
+    Loader.shared
+      .add('assets/ship.json')
       .add('assets/bg.gif')
       .add('assets/starfield.png')
       .add('assets/missile.png')

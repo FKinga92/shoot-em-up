@@ -1,4 +1,4 @@
-import { AnimatedSprite, Container, Loader, Sprite, Texture } from 'pixi.js';
+import { AnimatedSprite, Container, Loader, Sprite } from 'pixi.js';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from '../constants';
 import { getRandomIntBetween } from '../utils';
 
@@ -31,10 +31,9 @@ export default class Enemy {
   }
 
   public destroy() {
-    const frames = ['expl1.png', 'expl2.png', 'expl3.png', 'expl4.png', 'expl5.png', 'expl6.png'];
-    const textures = frames.map(url => Texture.from(url));
+    const sheet = Loader.shared.resources['assets/explosion.json'].spritesheet;
     this._stage.removeChild(this._sprite);
-    const sprite = new AnimatedSprite(textures);
+    const sprite = new AnimatedSprite(sheet.animations.expl);
     sprite.position.set(this.sprite.position.x, this.sprite.position.y);
     sprite.scale.set(0.5, 0.5);
     sprite.animationSpeed = 0.2;

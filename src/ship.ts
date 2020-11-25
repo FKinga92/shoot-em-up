@@ -1,4 +1,4 @@
-import { AnimatedSprite, Application, Container, Sprite, Texture } from 'pixi.js';
+import { AnimatedSprite, Application, Container, Loader, Sprite, Spritesheet } from 'pixi.js';
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants';
 import MissileSpritesPool from './sprites-pool/missile-sprites-pool';
 
@@ -13,20 +13,19 @@ export default class Ship extends AnimatedSprite {
   public readonly missiles: Array<Sprite>;
 
   constructor(app: Application) {
-    const frames = ['assets/ship/f1.png', 'assets/ship/f2.png', 'assets/ship/f3.png', 'assets/ship/f4.png'];
-    const textures = frames.map(url => Texture.from(url));
-    super(textures);
+    const sheet = Loader.shared.resources['assets/ship.json'].spritesheet;
+    super(sheet.animations.f);
+
+    this._stage = app.stage;
+    this._missileSpritesPool = new MissileSpritesPool();
+    this.missiles = [];
 
     this.position.x = 10;
     this.position.y = app.renderer.height / 2 - this.height / 2;
     this.scale.set(1.5, 1.5);
     this.animationSpeed = 0.167;
     this.play();
-
-    this._stage = app.stage;
     this._stage.addChild(this);
-    this._missileSpritesPool = new MissileSpritesPool();
-    this.missiles = [];
   }
 
   public move(direction: string) {

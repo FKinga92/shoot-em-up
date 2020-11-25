@@ -1,4 +1,4 @@
-import { Container, Sprite } from 'pixi.js';
+import { Container } from 'pixi.js';
 import Ship from '../ship';
 import EnemySpritesPool from '../sprites-pool/enemy-sprites-pool';
 import Enemy from './enemy';
