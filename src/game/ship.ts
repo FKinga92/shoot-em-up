@@ -1,5 +1,5 @@
 import { AnimatedSprite, Container, Loader, Sprite } from 'pixi.js';
-import { CANVAS } from './constants';
+import { CANVAS } from '../constants';
 import { ControlKey, Keys } from './movement';
 import MissileSpritesPool from './sprites-pool/missile-sprites-pool';
 

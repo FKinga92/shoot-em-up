@@ -1,5 +1,5 @@
 import { TilingSprite, Texture } from 'pixi.js';
-import { CANVAS } from '../constants';
+import { CANVAS } from '../../constants';
 
 export default class BGLayer extends TilingSprite {
 

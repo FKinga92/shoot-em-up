@@ -5,7 +5,8 @@ export default class MissileSpritesPool extends SpritesPool {
   protected _createSprites() {
     this._sprites = [];
     for (let i = 0; i < 20; i++) {
-      this._sprites.push(new Sprite(Texture.from('assets/missile.png')));
+      const missile = new Sprite(Texture.from('assets/missile.png'));
+      this._sprites.push(missile);
     }
   }
 }

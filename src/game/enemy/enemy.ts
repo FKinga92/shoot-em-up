@@ -1,5 +1,5 @@
 import { Container, Sprite } from 'pixi.js';
-import { CANVAS } from '../constants';
+import { CANVAS } from '../../constants';
 import { getRandomIntBetween } from '../utils';
 
 export default class Enemy {
