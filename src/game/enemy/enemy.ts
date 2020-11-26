@@ -4,8 +4,8 @@ import { getRandomIntBetween } from '../utils';
 
 export default class Enemy {
 
-  public static SPEED_X = 0.1;
-  public static SPEED_Y = 0.5;
+  public static SPEED_X = 0.3;
+  public static SPEED_Y = 1;
 
   private _direction: number;
   private _maxY: number;

@@ -5,6 +5,15 @@ import EnemiesManager from './enemy/enemies-manager';
 import { ControlKey, Key, Keys } from './movement';
 import Ship from './ship';
 
+const style = new TextStyle({
+  fontFamily: 'Futura',
+  fontSize: 64,
+  fill: 'white',
+  align: 'center',
+  wordWrap: true,
+  wordWrapWidth: 600
+});
+
 export default class Controller extends Container {
 
   private _keys: { [K in ControlKey]: string };
@@ -14,6 +23,7 @@ export default class Controller extends Container {
   private _enemySpawnId: NodeJS.Timeout;
   private _enemyDirChangeId: NodeJS.Timeout;
   private _isStopped = false;
+  private _info: Text;
 
   constructor(private _stage: Container) {
     super();
@@ -24,6 +34,7 @@ export default class Controller extends Container {
     this._scroller = new Scroller(this);
     this._ship = new Ship(this, userKeys);
     this._enemiesManager = new EnemiesManager(this);
+    this._info = this._addTextToCenter('Move with arrow keys, Shoot with Space');
 
     this._enemySpawnId = setInterval(() => {
       this._enemiesManager.addEnemy();
@@ -42,6 +53,7 @@ export default class Controller extends Container {
     if (!this._ship) {
       return;
     }
+    this._fadeOutInfo();
     this._scroller.moveViewPortXBy();
     this._enemiesManager.update();
     this._ship.update();
@@ -49,20 +61,29 @@ export default class Controller extends Container {
     this._checkForEnemyHit();
   }
 
+  private _fadeOutInfo() {
+    if (!this._info) { return; }
+    this._info.alpha -= 0.008;
+    if (this._info.alpha <= 0) {
+      this.removeChild(this._info);
+      this._info = undefined;
+    }
+  }
+
   private _checkForCollision() {
     const shipHit = this._enemiesManager.checkForCollision(this._ship);
     if (shipHit) {
       this._destroySprite(this._ship, true);
-      const style = new TextStyle({
-        fontFamily: 'Futura',
-        fontSize: 64,
-        fill: 'white'
-      });
-      const message = new Text('GAME OVER', style);
-      message.x = CANVAS.width / 2 - message.width / 2;
-      message.y = CANVAS.height / 2 - message.height;
-      this.addChild(message);
+      this._addTextToCenter('GAME OVER');
     }
+  }
+
+  private _addTextToCenter(text: string) {
+    const message = new Text(text, style);
+    message.x = CANVAS.width / 2 - message.width / 2;
+    message.y = CANVAS.height / 2 - message.height;
+    this.addChild(message);
+    return message;
   }
 
   private _destroySprite(destroyedSprite: Sprite, gameOver = false) {
