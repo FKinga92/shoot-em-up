@@ -24,7 +24,7 @@ export default class MainScreen extends Container {
   }
 
   public update() {
-    this._scroller.moveViewPortXBy(1);
+    this._scroller.moveViewPortXBy();
     this._logo.rotation += 0.001;
   }
 
