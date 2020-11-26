@@ -12,13 +12,14 @@ export default class Main {
   private _mainScreen: MainScreen;
 
   constructor() {
+    const canvas = document.getElementById('game-canvas');
     this._app = new Application({
       width: CANVAS.width,
       height: CANVAS.height,
       sharedLoader: true,
-      sharedTicker: true
+      sharedTicker: true,
+      view: canvas as HTMLCanvasElement
     });
-    document.body.appendChild(this._app.view);
 
     this._loadSprites();
   }
